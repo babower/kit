@@ -3,8 +3,9 @@
 // view for every chart, light/dark theme toggle, narrower drawings on phones. Themed only
 // through CSS variables (charts.css), so it follows the page's theme.
 //
-// Works under a strict Content-Security-Policy: inline it in a <script nonce="..."> and it
-// never sets a `style` attribute (it uses element.style, which CSP allows).
+// Works under a strict Content-Security-Policy: inline it in a script element that carries
+// the page's nonce; it never sets a `style` attribute (it uses element.style, which CSP
+// allows).
 //
 // The page provides: an element with id "tip" (the tooltip), optionally a button with id
 // "theme", and a `window.renderAll()` that draws everything (called again when the theme or

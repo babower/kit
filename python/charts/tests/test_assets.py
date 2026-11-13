@@ -25,6 +25,14 @@ def test_never_sets_a_style_attribute():
     assert not re.search(r"""\{\s*style\s*:""", js)  # h("div", { style: ... })
 
 
+def test_safe_to_inline_in_a_page():
+    # Inlined text must never look like a tag: "</script" would end the script early.
+    for text in (kit_charts.js(), kit_charts.css()):
+        lowered = text.lower()
+        assert "<script" not in lowered and "</script" not in lowered
+        assert "<style" not in lowered and "</style" not in lowered
+
+
 def test_reads_no_page_data_and_needs_no_network():
     js = kit_charts.js()
     assert 'getElementById("data")' not in js  # each page parses its own data
