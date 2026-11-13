@@ -1,0 +1,101 @@
+/* kit-charts: design tokens and component styles for charts.js.
+ *
+ * Tokens: surfaces, text, borders, the six-colour categorical palette (validated for
+ * contrast and colour-blind separation, in a fixed order) and status colours, for light
+ * and dark. Dark follows the system unless the page sets data-theme="light" or "dark" on
+ * <html> (the theme toggle in charts.js does that).
+ *
+ * Components: svg.chart, .legend, #tip, details.table, tables, .status, .meter, .kpi.
+ * Page layout (main, nav, grids, cards) stays with each app.
+ */
+
+:root {
+  color-scheme: light;
+  --surface-0: #f4f3f0; --surface-1: #fcfcfb; --border: #e3e1dc; --grid: #ecebe7;
+  --text-primary: #0b0b0b; --text-secondary: #52514e; --text-muted: #7a7974;
+  --series-1: #2a78d6; --series-2: #eb6834; --series-3: #1baf7a;
+  --series-4: #eda100; --series-5: #e87ba4; --series-6: #008300;
+  --neutral: #b9b7b0;
+  --good: #0ca30c; --warning: #fab219; --serious: #ec835a; --critical: #d03b3b;
+  --good-text: #006300; --critical-text: #b42727;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --surface-0: #111110; --surface-1: #1a1a19; --border: #2e2e2c; --grid: #262624;
+    --text-primary: #f0efec; --text-secondary: #c3c2b7; --text-muted: #8f8e86;
+    --series-1: #3987e5; --series-2: #d95926; --series-3: #199e70;
+    --series-4: #c98500; --series-5: #d55181; --series-6: #008300;
+    --neutral: #5d5c57; --good-text: #4cc44c; --critical-text: #ef7a7a;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --surface-0: #111110; --surface-1: #1a1a19; --border: #2e2e2c; --grid: #262624;
+  --text-primary: #f0efec; --text-secondary: #c3c2b7; --text-muted: #8f8e86;
+  --series-1: #3987e5; --series-2: #d95926; --series-3: #199e70;
+  --series-4: #c98500; --series-5: #d55181; --series-6: #008300;
+  --neutral: #5d5c57; --good-text: #4cc44c; --critical-text: #ef7a7a;
+}
+
+/* charts */
+svg.chart { width: 100%; height: auto; display: block; overflow: visible; }
+svg.chart text { fill: var(--text-muted); font-size: 11px; font-family: inherit; }
+svg.chart .gridline { stroke: var(--grid); stroke-width: 1; }
+svg.chart .axis { stroke: var(--border); stroke-width: 1; }
+svg.chart .hit { fill: transparent; cursor: default; }
+svg.chart .hit:focus { outline: none; }
+svg.chart .hit:focus-visible { stroke: var(--text-secondary); stroke-width: 2; }
+svg.chart .mark:hover, svg.chart g.col:hover .mark { filter: brightness(1.12); }
+svg.chart .lbl { fill: var(--text-secondary); font-size: 12px; }
+svg.chart .lbl-strong { fill: var(--text-primary); font-size: 12px; font-weight: 600; }
+
+/* legend */
+.legend { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 12px;
+          color: var(--text-secondary); margin: 2px 0 8px; }
+.legend i { display: inline-block; width: 10px; height: 10px; border-radius: 2px;
+            margin-right: 5px; vertical-align: -1px; }
+.legend i.line { height: 2px; vertical-align: 3px; }
+
+/* tooltip */
+#tip { position: fixed; pointer-events: none; z-index: 10; background: var(--surface-1);
+       border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px;
+       box-shadow: 0 4px 16px rgba(0,0,0,.12); font-size: 12px; display: none;
+       max-width: 320px; color: var(--text-primary); }
+#tip .t { color: var(--text-secondary); margin-bottom: 4px; }
+#tip .r { display: flex; gap: 8px; align-items: center; }
+#tip .r b { font-variant-numeric: tabular-nums; min-width: 54px; text-align: right; }
+#tip .k { width: 12px; height: 2px; display: inline-block; flex: none; }
+
+/* tables and table views */
+details.table { margin-top: 8px; }
+details.table summary { cursor: pointer; color: var(--text-secondary); font-size: 12px; }
+table { width: 100%; border-collapse: collapse; font-size: 12.5px;
+        font-variant-numeric: tabular-nums; }
+th, td { text-align: left; padding: 5px 8px; border-bottom: 1px solid var(--grid);
+         white-space: nowrap; }
+th { color: var(--text-secondary); font-weight: 600; font-size: 12px; }
+td.num, th.num { text-align: right; }
+.scroll { overflow-x: auto; }
+.gap { height: 10px; }
+.muted { color: var(--text-muted); }
+.empty { padding: 28px 8px; text-align: center; }
+
+/* status chips, meters and KPI tiles */
+.status { display: inline-flex; gap: 4px; align-items: center; font-size: 12px;
+          font-weight: 600; }
+.status::before { content: ""; width: 8px; height: 8px; border-radius: 50%;
+                  background: currentColor; flex: none; }
+.status.good { color: var(--good-text); } .status.bad { color: var(--critical-text); }
+.status.warn { color: var(--text-secondary); }
+.status.warn::before { background: var(--warning); }
+.status.none { color: var(--text-muted); }
+.status.none::before { background: var(--neutral); }
+.meter { height: 6px; background: var(--grid); border-radius: 3px; margin-top: 8px;
+         overflow: hidden; }
+.meter > span { display: block; height: 100%; border-radius: 3px; }
+.kpi .label { color: var(--text-secondary); font-size: 12px; }
+.kpi .value { font-size: 24px; font-weight: 650; letter-spacing: -0.01em; margin-top: 2px;
+              font-variant-numeric: tabular-nums; }
+.kpi .note { color: var(--text-muted); font-size: 12px; margin-top: 2px; }
+@media (max-width: 520px) { .kpi .value { font-size: 20px; } }
