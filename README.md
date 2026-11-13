@@ -11,7 +11,7 @@ Notion: Dev Knowledge Base → Shared → Components.
 
 | Package | What it does | Install (pin the latest tag) |
 | --- | --- | --- |
-| _none released yet_ | | |
+| [signin](python/signin) | Auth0 / OpenID Connect sign-in for FastAPI: sessions, access rules checked every request, CSRF, security headers, a fake provider for tests | `kit-signin @ git+https://github.com/babower/kit@signin-v0.1.0#subdirectory=python/signin` |
 
 The install line for a package looks like this (the `kit-` name, the tag, the folder):
 
