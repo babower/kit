@@ -1,0 +1,59 @@
+name: CI
+
+# Tests and lints each package on its own. On a pull request only the packages it touches
+# run; on main and on release tags, all of them. A release tag (<package>-vX.Y.Z) must
+# match the version in that package's pyproject.toml.
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+    tags: ["*-v*"]
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    outputs:
+      packages: ${{ steps.list.outputs.packages }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - id: list
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            base="origin/${{ github.base_ref }}"
+          else
+            base=""
+          fi
+          echo "packages=$(python3 scripts/packages.py $base)" >> "$GITHUB_OUTPUT"
+
+  test:
+    needs: plan
+    if: needs.plan.outputs.packages != '[]'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        package: ${{ fromJson(needs.plan.outputs.packages) }}
+        python: ["3.11", "3.13"]
+    defaults:
+      run:
+        working-directory: python/${{ matrix.package }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - run: pip install -e '.[dev]'
+      - run: ruff check .
+      - run: pytest -q
+      # Installs the way a project does (non-editable, from outside the repo).
+      - run: pip install . && cd /tmp && python -c "import importlib.metadata as m; print(m.version('kit-${{ matrix.package }}'))"
+
+  release-tag:
+    if: startsWith(github.ref, 'refs/tags/')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 scripts/check_tag.py "${GITHUB_REF_NAME}"
